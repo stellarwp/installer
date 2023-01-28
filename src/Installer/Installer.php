@@ -55,6 +55,17 @@ class Installer {
 	}
 
 	/**
+	 * Resets the object back to its origin state.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public static function reset(): void {
+		static::$instance = null;
+	}
+
+	/**
 	 * Deregisters a plugin for installation / activation.
 	 *
 	 * @since 1.0.0
@@ -107,7 +118,7 @@ class Installer {
 	 * @return array
 	 */
 	public function get_js_selectors(): array {
-		$plugins   = $this->get_plugins();
+		$plugins   = $this->get_registered_plugins();
 
 		$selectors = [];
 
@@ -174,8 +185,23 @@ class Installer {
 	 *
 	 * @return array
 	 */
-	public function get_plugins(): array {
+	public function get_registered_plugins(): array {
 		return $this->plugins;
+	}
+
+	/**
+	 * Gets registered plugin.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return Handler\Plugin|null
+	 */
+	public function get_registered_plugin( string $slug ): ?Handler\Plugin {
+		if ( ! isset( $this->plugins[ $slug ] ) ) {
+			return null;
+		}
+
+		return $this->plugins[ $slug ];
 	}
 
 	/**
@@ -225,6 +251,17 @@ class Installer {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Returns whether or not a plugin is registered.
+	 *
+	 * @param string $slug Resource slug.
+	 *
+	 * @return bool
+	 */
+	public function is_registered( string $slug ): bool {
+		return isset( $this->plugins[ $slug ] );
 	}
 
 	/**

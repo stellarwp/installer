@@ -20,7 +20,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "StellarWP\\Installer\\Tests\\": "tests/"
+      "StellarWP\\Installer\\Tests\\": "tests/_support/Helper/"
     }
   },
   "minimum-stability": "stable",
