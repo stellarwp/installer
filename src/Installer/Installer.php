@@ -233,14 +233,13 @@ class Installer {
 	 * @since 1.0.0
 	 *
 	 * @param string $plugin_slug The slug of the plugin.
-	 * @param string $plugin_name The name of the plugin.
-	 * @param string $plugin_basename The basename of the plugin.
+	 * @param string $plugin_name The non-translated name of the plugin.
 	 * @param string|null $download_url The download URL of the plugin.
 	 * @param string|null $did_action The action that indicates that a plugin is active.
 	 *
 	 * @return void
 	 */
-	public function register_plugin( string $plugin_slug, string $plugin_name, string $plugin_basename, ?string $download_url = null, ?string $did_action = null ): void {
+	public function register_plugin( string $plugin_slug, string $plugin_name, ?string $download_url = null, ?string $did_action = null ): void {
 		// If the plugin is already registered, deregister it first so we don't have duplicate actions.
 		if ( isset( $this->plugins[ $plugin_slug ] ) ) {
 			$this->deregister_plugin( $plugin_slug );
@@ -252,7 +251,6 @@ class Installer {
 		$handler     = new Handler\Plugin(
 			$plugin_name,
 			$plugin_slug,
-			$plugin_basename,
 			$download_url,
 			$did_action,
 			$js_action
@@ -269,10 +267,9 @@ class Installer {
 		 *
 		 * @param string $plugin_slug The slug of the plugin.
 		 * @param string $plugin_name The name of the plugin.
-		 * @param string $plugin_basename The basename of the plugin.
 		 * @param string|null $download_url The download URL of the plugin.
 		 */
-		do_action( "stellarwp/installer/{$hook_prefix}/register_plugin", $plugin_slug, $plugin_name, $plugin_basename, $download_url );
+		do_action( "stellarwp/installer/{$hook_prefix}/register_plugin", $plugin_slug, $plugin_name, $download_url );
 	}
 
 	/**

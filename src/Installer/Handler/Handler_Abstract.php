@@ -48,6 +48,20 @@ abstract class Handler_Abstract implements Handler {
 	protected $download_url;
 
 	/**
+	 * Whether the resource is activated.
+	 *
+	 * @var bool|null
+	 */
+	protected $is_active = null;
+
+	/**
+	 * Whether the resource is installed.
+	 *
+	 * @var bool|null
+	 */
+	protected $is_installed = null;
+
+	/**
 	 * The JS action to be used in the button.
 	 *
 	 * @since 1.0.0
@@ -102,13 +116,31 @@ abstract class Handler_Abstract implements Handler {
 	 *
 	 * @since 1.0.0
 	 */
-	public function __construct( string $name, string $slug, string $basename, ?string $download_url = null, ?string $did_action = null, string $js_action ) {
+	public function __construct( string $name, string $slug, ?string $download_url = null, ?string $did_action = null, string $js_action ) {
 		$this->name         = $name;
 		$this->slug         = $slug;
-		$this->basename     = $basename;
 		$this->download_url = $download_url;
 		$this->did_action   = $did_action;
 		$this->js_action    = $js_action;
+	}
+
+	/**
+	 * Gets a plugin's basename.
+	 *
+	 * @return string|null
+	 */
+	public function get_basename(): ?string {
+		if ( empty( $this->basename ) ) {
+			$plugins = get_plugins();
+			foreach ( $plugins as $file => $plugin ) {
+				if ( $plugin['Name'] === $this->name ) {
+					$this->basename = $file;
+					break;
+				}
+			}
+		}
+
+		return $this->basename;
 	}
 
 	/**

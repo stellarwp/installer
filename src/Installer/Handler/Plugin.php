@@ -28,7 +28,7 @@ class Plugin extends Handler_Abstract {
 			return true;
 		}
 
-		$activate = activate_plugin( $this->basename, '', false, true );
+		$activate = activate_plugin( $this->get_basename(), '', false, true );
 
 		return ! is_wp_error( $activate );
 	}
@@ -131,7 +131,7 @@ class Plugin extends Handler_Abstract {
 			$installed = $upgrader->install( $url );
 
 			if ( $installed ) {
-				$activate = activate_plugin( $this->basename, '', false, true );
+				$activate = activate_plugin( $this->get_basename(), '', false, true );
 				$success  = ! is_wp_error( $activate );
 			} else {
 				$success = false;
@@ -147,13 +147,17 @@ class Plugin extends Handler_Abstract {
 	 * @inheritDoc
 	 */
 	public function is_active(): bool {
-		$did_action = false;
+		if ( $this->is_active === null ) {
+			$did_action = false;
 
-		if ( isset( $this->did_action ) ) {
-			$did_action = did_action( $this->did_action );
+			if ( isset( $this->did_action ) ) {
+				$did_action = did_action( $this->did_action );
+			}
+
+			$this->is_active = is_plugin_active( $this->get_basename() ) || is_plugin_active_for_network( $this->get_basename() ) || $did_action;
 		}
 
-		return is_plugin_active( $this->basename ) || is_plugin_active_for_network( $this->basename ) || $did_action;
+		return $this->is_active;
 	}
 
 	/**
@@ -164,8 +168,18 @@ class Plugin extends Handler_Abstract {
 	 * @return boolean True if active
 	 */
 	public function is_installed(): bool {
-		$installed_plugins = get_plugins();
+		if ( $this->is_installed === null ) {
+			$this->is_installed = false;
+			$installed_plugins  = get_plugins();
 
-		return array_key_exists( $this->basename, $installed_plugins ) || in_array( $this->basename, $installed_plugins, true );
+			foreach ( $installed_plugins as $file => $plugin ) {
+				if ( $plugin['Name'] === $this->name ) {
+					$this->basename     = $file;
+					$this->is_installed = true;
+				}
+			}
+		}
+
+		return $this->is_installed;
 	}
 }

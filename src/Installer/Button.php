@@ -187,9 +187,9 @@ class Button {
 	/**
 	 * Renders an install/activate button.
 	 *
-	 * @param string      $action       The action to perform.
-	 * @param string|null $button_label The button label.
-	 * @param string|null $redirect_url The redirect URL.
+	 * @param string      $request_action The action to perform.
+	 * @param string|null $button_label   The button label.
+	 * @param string|null $redirect_url   The redirect URL.
 	 *
 	 * @return void
 	 */
