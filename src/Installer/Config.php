@@ -38,6 +38,10 @@ class Config {
 	 * @return void
 	 */
 	public static function set_hook_prefix( string $hook_prefix ): void {
+		if ( ! empty( static::$hook_prefix ) ) {
+			throw new \RuntimeException( sprintf( __( 'The stellarwp/installer hook prefix has already been set to %1$s.', '%TEXTDOMAIN%' ), static::$hook_prefix ) );
+		}
+
 		$sanitized_prefix = sanitize_key( $hook_prefix );
 
 		if ( $sanitized_prefix !== $hook_prefix ) {
