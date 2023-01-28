@@ -212,6 +212,8 @@ class Button {
 		$slug             = $this->handler->get_slug();
 		$button_classes   = $this->get_classes();
 		$ajax_nonce       = Installer::get()->get_nonce();
+		$hook_prefix      = Config::get_hook_prefix();
+		$request_action   = $this->handler->get_js_action();
 		$activated_label  = $this->get_activated_label();
 		$activating_label = $this->get_activating_label();
 		$installed_label  = $this->get_installed_label();
