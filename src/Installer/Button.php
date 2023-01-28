@@ -174,6 +174,17 @@ class Button {
 	}
 
 	/**
+	 * Gets the selector.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_selector(): string {
+		return $this->selector;
+	}
+
+	/**
 	 * Renders an install/activate button.
 	 *
 	 * @param string      $action       The action to perform.
