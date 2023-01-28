@@ -18,6 +18,8 @@
  * @var string $activating_label The `Activating` label.
  * @var string $activated_label  The `Activated` label.
  */
+// We include the following use line to ensure that Strauss copies this file.
+use StellarWP\Installer\Installer;
 ?>
 <button
 	<?php if ( ! empty( $button_id ) ): ?>id="<?php echo esc_attr( $button_id ); ?>"<?php endif; ?>

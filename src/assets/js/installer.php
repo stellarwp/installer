@@ -6,6 +6,8 @@
  * @var string $busy_class The CSS class to use when the button is busy.
  * @var array $selectors The collection of registered resource selectors. The key of each selector is the resource slug and the value is the selector.
  */
+// We include the following use line to ensure that Strauss copies this file.
+use StellarWP\Installer\Installer;
 
 // @phpstan-ignore-next-line
 $js_object = preg_replace( '/[^a-zA-Z0-9_]/', '', $js_object );
