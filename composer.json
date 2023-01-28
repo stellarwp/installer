@@ -13,7 +13,9 @@
   },
   "autoload": {
     "psr-4": {
-      "StellarWP\\Installer\\": "src/Installer"
+      "StellarWP\\Installer\\": "src/Installer",
+      "StellarWP\\Installer\\Admin_Views\\": "src/admin-views",
+      "StellarWP\\Installer\\Assets_JS\\": "src/assets/js"
     }
   },
   "autoload-dev": {
