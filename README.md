@@ -5,6 +5,9 @@
 A library for installing / activating other plugins.
 
 * [Installation](#installation)
+  * [Handling text domains](#handling-text-domains)
+	* [If you are using Strauss from within your `vendor/bin` directory](#if-you-are-using-strauss-from-within-your-vendorbin-directory)
+	* [If you are using Strauss as a `.phar` file](#if-you-are-using-strauss-as-a-phar-file)
 * [Initialization](#initialization)
 * [Registering a plugin](#registering-a-plugin)
   * [Simple registration](#simple-registration)
@@ -29,6 +32,33 @@ composer require stellarwp/installer
 > We _actually_ recommend that this library gets included in your project using [Strauss](https://github.com/BrianHenryIE/strauss).
 >
 > Luckily, adding Strauss to your `composer.json` is only slightly more complicated than adding a typical dependency, so checkout our [strauss docs](https://github.com/stellarwp/global-docs/blob/main/docs/strauss-setup.md).
+
+### Handling text domains
+
+This library has strings that are run through WordPress translation functions. Because of this, there's an extra step that needs to be taken to ensure that the placeholder `%TEXTDOMAIN%` is replaced with your project's text domain.
+
+#### If you are using Strauss from within your `vendor/bin` directory
+
+```json
+"scripts": {
+    "strauss": [
+      "vendor/stellarwp/installer/bin/set-domain domain=YOUR_PROJECTS_TEXT_DOMAIN",
+      "vendor/bin/strauss"
+    ]
+}
+```
+
+#### If you are using Strauss as a `.phar` file
+
+```json
+"scripts": {
+	"strauss": [
+		"test -f ./bin/strauss.phar || curl -o bin/strauss.phar -L -C - https://github.com/BrianHenryIE/strauss/releases/download/0.13.0/strauss.phar",
+		"vendor/stellarwp/installer/bin/set-domain domain=YOUR_PROJECTS_TEXT_DOMAIN",
+		"@php bin/strauss.phar"
+	]
+}
+```
 
 ## Initialization
 
@@ -275,3 +305,9 @@ Filters the data returned from the WordPress.org plugin repository.
 ### `stellarwp_installer_{$hook_prefix}_error`
 
 Fires when an error occurs during the installation of a plugin.
+
+```js
+wp.hooks.addAction( 'stellarwp_installer_HOOK_PREFIX_error', function( selector, slug, action, message, hookPrefix ) {
+	alert( message );
+} );
+```
