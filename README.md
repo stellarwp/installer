@@ -36,11 +36,15 @@ During the `plugins_loaded` action, initialize the installer.
 namespace StellarWP\Installer\Config;
 namespace StellarWP\Installer\Installer;
 
-Config::set_hook_prefix( 'boomshakalaka' );
-Installer::init();
+add_action( 'plugins_loaded', function () {
+	Config::set_hook_prefix( 'boomshakalaka' );
+	Installer::init();
+} );
 ```
 
 ### Registering a plugin
+
+Registering plugins for installation should be done during (or after) the `plugins_loaded` action.
 
 `$installer->register_plugin( $slug, $plugin_name, $plugin_basename, $download_link, $did_action );`
 
@@ -57,8 +61,10 @@ Installer::init();
 ```php
 use StellarWP\Installer\Installer;
 
-$installer = Installer::get();
-$installer->register_plugin( 'event-tickets', 'Event Tickets', 'event-tickets/event-tickets.php' );
+add_action( 'plugins_loaded', function () {
+	$installer = Installer::get();
+	$installer->register_plugin( 'event-tickets', 'Event Tickets', 'event-tickets/event-tickets.php' );
+} );
 ```
 
 #### Registration with download link
@@ -66,8 +72,10 @@ $installer->register_plugin( 'event-tickets', 'Event Tickets', 'event-tickets/ev
 ```php
 use StellarWP\Installer\Installer;
 
-$installer = Installer::get();
-$installer->register_plugin( 'event-tickets', 'Event Tickets', 'event-tickets/event-tickets.php', 'https://example.com/event-tickets.zip' );
+add_action( 'plugins_loaded', function () {
+	$installer = Installer::get();
+	$installer->register_plugin( 'event-tickets', 'Event Tickets', 'event-tickets/event-tickets.php', 'https://example.com/event-tickets.zip' );
+} );
 ```
 
 #### Registration with an action indicating that the plugin is active
@@ -75,8 +83,10 @@ $installer->register_plugin( 'event-tickets', 'Event Tickets', 'event-tickets/ev
 ```php
 use StellarWP\Installer\Installer;
 
-$installer = Installer::get();
-$installer->register_plugin( 'event-tickets', 'Event Tickets', 'event-tickets/event-tickets.php', null, 'event_tickets_plugin_loaded' );
+add_action( 'plugins_loaded', function () {
+	$installer = Installer::get();
+	$installer->register_plugin( 'event-tickets', 'Event Tickets', 'event-tickets/event-tickets.php', null, 'event_tickets_plugin_loaded' );
+} );
 ```
 
 ### Rendering an install/activate button
