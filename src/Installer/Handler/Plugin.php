@@ -176,6 +176,7 @@ class Plugin extends Handler_Abstract {
 				if ( $plugin['Name'] === $this->name ) {
 					$this->basename     = $file;
 					$this->is_installed = true;
+					break;
 				}
 			}
 		}
