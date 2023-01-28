@@ -2,8 +2,6 @@
 
 A library for installing / activating other plugins.
 
-## Docs
-
 * [Installation](#installation)
 * [Initialization](#initialization)
 * [Registering a plugin](#registering-a-plugin)
@@ -14,9 +12,11 @@ A library for installing / activating other plugins.
   * [Render a button](#render-a-button)
   * [Get a button](#get-a-button)
   * [Get or render a button and redirect](#get-or-render-a-button-and-redirect)
-* [Hooks](#hooks)
+* [PHP - Actions](#php---actions)
+* [PHP - Filters](#php---filters)
+* [JS - Actions](#js---actions)
 
-### Installation
+## Installation
 
 It's recommended that you install Schema as a project dependency via [Composer](https://getcomposer.org/):
 
@@ -28,7 +28,7 @@ composer require stellarwp/installer
 >
 > Luckily, adding Strauss to your `composer.json` is only slightly more complicated than adding a typical dependency, so checkout our [strauss docs](https://github.com/stellarwp/global-docs/blob/main/docs/strauss-setup.md).
 
-### Initialization
+## Initialization
 
 During the `plugins_loaded` action, initialize the installer.
 
@@ -42,58 +42,57 @@ add_action( 'plugins_loaded', function () {
 } );
 ```
 
-### Registering a plugin
+## Registering a plugin
 
 Registering plugins for installation should be done during (or after) the `plugins_loaded` action.
 
-`$installer->register_plugin( $slug, $plugin_name, $plugin_basename, $download_link, $did_action );`
+`$installer->register_plugin( $slug, $plugin_name, $download_link, $did_action );`
 
 | Parameter | Type | Description                                                                                                              |
 | --- | --- |--------------------------------------------------------------------------------------------------------------------------|
 | `$slug` | `string` | **Required.** A simple slug for referring to your plugin.                                                                |
-| `$plugin_name` | `string` | **Required.** The plugin name.                                                                                           |
-| `$plugin_basename` | `string` | **Required.** The plugin basename. (`event-tickets/event-tickets.php`)                                                   |
+| `$plugin_name` | `string` | **Required.** The plugin name. This should ***not*** be translated. It must match what is in the plugin header docblock. |
 | `$download_link` | `string` | The plugin download link. If this is omitted, it is assumed that the URL will come from WordPress.org plugin repository. |
 | `$did_action` | `string` | If provided, the action will be checked with `did_action()` to indicate that the plugin is active.                       |
 
-#### Simple registration
+### Simple registration
 
 ```php
 use StellarWP\Installer\Installer;
 
 add_action( 'plugins_loaded', function () {
 	$installer = Installer::get();
-	$installer->register_plugin( 'event-tickets', 'Event Tickets', 'event-tickets/event-tickets.php' );
+	$installer->register_plugin( 'event-tickets', 'Event Tickets' );
 } );
 ```
 
-#### Registration with download link
+### Registration with download link
 
 ```php
 use StellarWP\Installer\Installer;
 
 add_action( 'plugins_loaded', function () {
 	$installer = Installer::get();
-	$installer->register_plugin( 'event-tickets', 'Event Tickets', 'event-tickets/event-tickets.php', 'https://example.com/event-tickets.zip' );
+	$installer->register_plugin( 'event-tickets', 'Event Tickets', 'https://example.com/event-tickets.zip' );
 } );
 ```
 
-#### Registration with an action indicating that the plugin is active
+### Registration with an action indicating that the plugin is active
 
 ```php
 use StellarWP\Installer\Installer;
 
 add_action( 'plugins_loaded', function () {
 	$installer = Installer::get();
-	$installer->register_plugin( 'event-tickets', 'Event Tickets', 'event-tickets/event-tickets.php', null, 'event_tickets_plugin_loaded' );
+	$installer->register_plugin( 'event-tickets', 'Event Tickets', null, 'event_tickets_plugin_loaded' );
 } );
 ```
 
-### Rendering an install/activate button
+## Rendering an install/activate button
 
 Buttons are the main point of this library. You can get or render a button. When you do, the relevant JavaScript will be enqueued to hook the button up with admin-ajax.php.
 
-#### Render a button
+### Render a button
 
 ```php
 use StellarWP\Installer\Installer;
@@ -101,7 +100,7 @@ use StellarWP\Installer\Installer;
 Installer::get()->render_plugin_button( 'event-tickets', 'install', 'Install Event Tickets' );
 ```
 
-#### Get a button
+### Get a button
 
 ```php
 use StellarWP\Installer\Installer;
@@ -109,7 +108,7 @@ use StellarWP\Installer\Installer;
 Installer::get()->get_plugin_button( 'event-tickets', 'install', 'Install Event Tickets' );
 ```
 
-#### Get or render a button and redirect
+### Get or render a button and redirect
 
 ```php
 use StellarWP\Installer\Installer;
@@ -121,60 +120,156 @@ $button = Installer::get()->get_plugin_button( 'event-tickets', 'install', 'Inst
 Installer::get()->render_plugin_button( 'event-tickets', 'install', 'Install Event Tickets', $redirect_url );
 ```
 
-### Hooks
+## PHP - Actions
 
-#### Action: `stellarwp/installer/{$hook_prefix}/deregister_plugin`
+### `stellarwp/installer/{$hook_prefix}/deregister_plugin`
 
 Fired when a plugin is deregistgered.
 
-#### Action: `stellarwp/installer/{$hook_prefix}/register_plugin`
+**Parameters**: *string* `$slug`
+
+### `stellarwp/installer/{$hook_prefix}/register_plugin`
 
 Fired after registering a plugin.
 
-#### Filter: `stellarwp/installer/{$hook_prefix}/activated_label`
+**Parameters**: *string* `$slug`, *string* `$plugin_name`, *string* `$download_link = null`, *string* `$did_action = null`
+
+## PHP - Filters
+
+### `stellarwp/installer/{$hook_prefix}/activated_label`
 
 Filters the label used for the "activated" button.
 
-#### Filter: `stellarwp/installer/{$hook_prefix}/activating_label`
+**Parameters**: *string* `$label`, *string* `$slug`, *StellarWP\Installer\Contracts\Handler* `$handler`
+
+**Default**: `Activated!`
+
+```php
+use StellarWP\Installer;
+$hook_prefix = Installer\Config::get_hook_prefix();
+
+add_filter( "stellarwp/installer/{$hook_prefix}/activated_label", function ( $label, $slug, $handler ) {
+	return 'Activated, yo.';
+}, 10, 3 );
+```
+
+### `stellarwp/installer/{$hook_prefix}/activating_label`
 
 Filters the label used for the "activating" button.
 
-#### Filter: `stellarwp/installer/{$hook_prefix}/busy_class`
+**Parameters**: *string* `$label`, *string* `$slug`, *StellarWP\Installer\Contracts\Handler* `$handler`
+
+**Default**: `Activating...`
+
+```php
+use StellarWP\Installer;
+$hook_prefix = Installer\Config::get_hook_prefix();
+
+add_filter( "stellarwp/installer/{$hook_prefix}/activating_label", function ( $label, $slug, $handler ) {
+	return 'BOOM! Activating...';
+}, 10, 3 );
+```
+
+### `stellarwp/installer/{$hook_prefix}/busy_class`
 
 Filters the class used for the "busy" state.
 
-#### Filter: `stellarwp/installer/{$hook_prefix}/button_classes`
+**Parameters**: *string* `$class`
+
+**Default**: `is-busy`
+
+```php
+use StellarWP\Installer;
+$hook_prefix = Installer\Config::get_hook_prefix();
+
+add_filter( "stellarwp/installer/{$hook_prefix}/busy_class", function ( $class ) {
+	return 'is-very-busy';
+} );
+```
+
+### `stellarwp/installer/{$hook_prefix}/button_classes`
 
 Filters the classes used for the button.
 
-#### Filter: `stellarwp/installer/{$hook_prefix}/button_id`
+**Parameters**: *array* `$classes`, *string* `$slug`, *StellarWP\Installer\Contracts\Handler* `$handler`
+
+**Default**: An array of default namespaced classes.
+
+```php
+use StellarWP\Installer;
+$hook_prefix = Installer\Config::get_hook_prefix();
+
+add_filter( "stellarwp/installer/{$hook_prefix}/button_classes", function ( $classes, $slug, $handler ) {
+	$classes[] = 'is-primary';
+	$classes[] = 'some-other-class';
+	return $classes;
+}, 10, 3 );
+```
+
+### `stellarwp/installer/{$hook_prefix}/button_id`
 
 Filters the button id attribute for the button.
 
-#### Filter: `stellarwp/installer/{$hook_prefix}/download_url`
+**Parameters**: *string* `$id`, *string* `$slug`, *StellarWP\Installer\Contracts\Handler* `$handler`
+
+**Default**: `null`
+
+### `stellarwp/installer/{$hook_prefix}/download_url`
 
 Filters the download_url used for the installation of the plugin.
 
-#### Filter: `stellarwp/installer/{$hook_prefix}/get_permission`
+### `stellarwp/installer/{$hook_prefix}/get_permission`
 
 Filters the permissions used for the installation of the plugin.
 
-#### Filter: `stellarwp/installer/{$hook_prefix}/install_error_message`
+### `stellarwp/installer/{$hook_prefix}/install_error_message`
 
 Filters the install error message.
 
-#### Filter: `stellarwp/installer/{$hook_prefix}/installed_label`
+### `stellarwp/installer/{$hook_prefix}/installed_label`
 
 Filters the label used for the "installed" button.
 
-#### Filter: `stellarwp/installer/{$hook_prefix}/installing_label`
+**Parameters**: *string* `$label`, *string* `$slug`, *StellarWP\Installer\Contracts\Handler* `$handler`
+
+**Default**: `Installed!`
+
+```php
+use StellarWP\Installer;
+$hook_prefix = Installer\Config::get_hook_prefix();
+
+add_filter( "stellarwp/installer/{$hook_prefix}/installed_label", function ( $label, $slug, $handler ) {
+	return 'Installed, yo.';
+}, 10, 3 );
+```
+
+### `stellarwp/installer/{$hook_prefix}/installing_label`
 
 Filter the label used for the "installing" button.
 
-#### Filter: `stellarwp/installer/{$hook_prefix}/nonce_name`
+**Parameters**: *string* `$label`, *string* `$slug`, *StellarWP\Installer\Contracts\Handler* `$handler`
+
+**Default**: `Installing...`
+
+```php
+use StellarWP\Installer;
+$hook_prefix = Installer\Config::get_hook_prefix();
+
+add_filter( "stellarwp/installer/{$hook_prefix}/installing_label", function ( $label, $slug, $handler ) {
+	return 'YAY! Installing...';
+}, 10, 3 );
+```
+
+### `stellarwp/installer/{$hook_prefix}/nonce_name`
 
 The name of the nonce field that is used when interacting with an install/activate button.
 
-#### Filter: `stellarwp/installer/{$hook_prefix}/wordpress_org_data`
+### `stellarwp/installer/{$hook_prefix}/wordpress_org_data`
 
 Filters the data returned from the WordPress.org plugin repository.
+
+## JS - Actions
+
+### `stellarwp_installer_{$hook_prefix}_error`
+
+Fires when an error occurs during the installation of a plugin.
