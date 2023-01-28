@@ -21,7 +21,7 @@ A library for installing / activating other plugins.
 It's recommended that you install Schema as a project dependency via [Composer](https://getcomposer.org/):
 
 ```bash
-composer require stellarwp/schema
+composer require stellarwp/installer
 ```
 
 > We _actually_ recommend that this library gets included in your project using [Strauss](https://github.com/BrianHenryIE/strauss).
