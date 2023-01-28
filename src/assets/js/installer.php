@@ -105,13 +105,15 @@ const <?php echo $js_object; ?> = {
 					location.replace( $button.data('redirect-url') );
 				}
 			} else {
-				$document.trigger( 'stellarwp_installer_' + $button.data( 'hook-prefix' ) + '_error', {
+				const event = $.Event( 'stellarwp_installer_' + $button.data( 'hook-prefix' ) + '_error' );
+				event.stellarwp = {
 					slug: $button.data( 'slug' ),
 					hookPrefix: $button.data( 'hook-prefix' ),
 					action: data.action,
 					message: response.data.message,
 					selector: e.data.selector
-				} );
+				};
+				$document.trigger( event );
 			}
 		} );
 	}
