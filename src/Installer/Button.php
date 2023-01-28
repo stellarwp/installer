@@ -193,7 +193,7 @@ class Button {
 	 *
 	 * @return void
 	 */
-	public function render( string $action, string $button_label = null, string $redirect_url = null ): void {
+	public function render( string $request_action, string $button_label = null, string $redirect_url = null ): void {
 		if ( did_action( 'admin_enqueue_scripts' ) ) {
 			Assets::enqueue_scripts();
 		} elseif ( ! Assets::has_enqueued() ) {
@@ -201,7 +201,7 @@ class Button {
 		}
 
 		if ( empty( $button_label ) ) {
-			if ( $action === 'activate' ) {
+			if ( $request_action === 'activate' ) {
 				$button_label = sprintf( __( 'Activate %s', '%TEXTDOMAIN%' ), $this->handler->get_name() );
 			} else {
 				$button_label = sprintf( __( 'Install %s', '%TEXTDOMAIN%' ), $this->handler->get_name() );
@@ -213,7 +213,7 @@ class Button {
 		$button_classes   = $this->get_classes();
 		$ajax_nonce       = Installer::get()->get_nonce();
 		$hook_prefix      = Config::get_hook_prefix();
-		$request_action   = $this->handler->get_js_action();
+		$action           = $this->handler->get_js_action();
 		$activated_label  = $this->get_activated_label();
 		$activating_label = $this->get_activating_label();
 		$installed_label  = $this->get_installed_label();

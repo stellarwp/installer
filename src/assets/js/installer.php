@@ -58,6 +58,7 @@ const <?php echo $js_object; ?> = {
 	obj.getData = function( $button ) {
 		const data = {
 			'action': $button.data( 'action' ),
+			'request': $button.data( 'request-action' ),
 			'slug': $button.data( 'slug' ),
 			'_wpnonce': $button.data( 'nonce' ),
 		};
@@ -70,7 +71,7 @@ const <?php echo $js_object; ?> = {
 	 *
 	 * @since 1.0.0
 	 */
-	obj.handleInstall = function() {
+	obj.handleInstall = function( e ) {
 		const $button = $( this );
 		const ajaxUrl = obj.ajaxurl;
 		const data = obj.getData( $button );
@@ -109,7 +110,7 @@ const <?php echo $js_object; ?> = {
 					hookPrefix: $button.data( 'hook-prefix' ),
 					action: data.action,
 					message: response.data.message,
-					selector: event.data.selector
+					selector: e.data.selector
 				} );
 			}
 		} );
