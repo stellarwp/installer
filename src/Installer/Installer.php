@@ -27,25 +27,7 @@ class Installer {
 	private $plugins = [];
 
 	/**
-	 * Service provider.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @var Provider
-	 */
-	private $provider;
-
-	/**
-	 * Registered themes.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @var array
-	 */
-	private $themes = [];
-
-	/**
-	 * Initializes the service provider.
+	 * Initialize.
 	 *
 	 * @since 1.0.0
 	 *
@@ -70,14 +52,6 @@ class Installer {
 	 */
 	public static function get(): Installer {
 		return static::init();
-	}
-
-	/**
-	 * Constructor.
-	 */
-	public function __construct() {
-		$this->provider = new Provider();
-		$this->provider->register();
 	}
 
 	/**
@@ -176,6 +150,24 @@ class Installer {
 	}
 
 	/**
+	 * Gets a plugin button.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string      $slug Plugin slug.
+	 * @param string      $action Action to perform. (install|activate)
+	 * @param string|null $button_label Button label.
+	 * @param string|null $redirect_url Redirect URL.
+	 *
+	 * @return string|null
+	 */
+	public function get_plugin_button( string $slug, string $action, ?string $button_label = null, ?string $redirect_url = null  ): ?string {
+		ob_start();
+		$this->render_plugin_button( $slug, $action, $button_label, $redirect_url );
+		return ob_get_clean();
+	}
+
+	/**
 	 * Gets registered plugins.
 	 *
 	 * @since 1.0.0
@@ -187,29 +179,7 @@ class Installer {
 	}
 
 	/**
-	 * Gets the provider.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return Provider
-	 */
-	public function get_provider(): Provider {
-		return $this->provider;
-	}
-
-	/**
-	 * Gets registered themes.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array
-	 */
-	public function get_themes(): array {
-		return $this->themes;
-	}
-
-	/**
-	 * Returns whether or not a plugin/theme is active.
+	 * Returns whether or not a plugin is active.
 	 *
 	 * @param string $slug Resource slug.
 	 *
@@ -220,17 +190,7 @@ class Installer {
 			return $this->plugins[ $slug ]->is_active();
 		}
 
-		if ( isset( $this->themes[ $slug ] ) ) {
-			return $this->themes[ $slug ]->is_active();
-		}
-
 		if ( is_plugin_active( $slug ) ) {
-			return true;
-		}
-
-		$active_theme = wp_get_theme();
-
-		if ( $active_theme == $slug ) {
 			return true;
 		}
 
@@ -238,7 +198,7 @@ class Installer {
 	}
 
 	/**
-	 * Returns whether or not a plugin/theme is installed.
+	 * Returns whether or not a plugin is installed.
 	 *
 	 * @param string $slug Resource slug.
 	 *
@@ -249,15 +209,11 @@ class Installer {
 			return true;
 		}
 
-		if ( $this->is_theme_installed( $slug ) ) {
-			return true;
-		}
-
 		return false;
 	}
 
 	/**
-	 * Returns whether or not a theme is installed.
+	 * Returns whether or not a plugin is installed.
 	 *
 	 * @param string $slug Resource slug.
 	 *
@@ -266,29 +222,6 @@ class Installer {
 	public function is_plugin_installed( string $slug ): bool {
 		if ( isset( $this->plugins[ $slug ] ) ) {
 			return $this->plugins[ $slug ]->is_installed();
-		}
-
-		return false;
-	}
-
-	/**
-	 * Returns whether or not a theme is installed.
-	 *
-	 * @param string $slug Resource slug.
-	 *
-	 * @return bool
-	 */
-	public function is_theme_installed( string $slug ): bool {
-		if ( isset( $this->themes[ $slug ] ) ) {
-			return $this->themes[ $slug ]->is_installed();
-		}
-
-		$themes = wp_get_themes();
-		foreach ( $themes as $theme ) {
-			// @phpstan-ignore-next-line
-			if ( $theme->Name == $slug ) {
-				return true;
-			}
 		}
 
 		return false;
@@ -340,5 +273,25 @@ class Installer {
 		 * @param string|null $download_url The download URL of the plugin.
 		 */
 		do_action( "stellarwp/installer/{$hook_prefix}/register_plugin", $plugin_slug, $plugin_name, $plugin_basename, $download_url );
+	}
+
+	/**
+	 * Renders a plugin button.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string      $slug Plugin slug.
+	 * @param string      $action Action to perform. (install|activate)
+	 * @param string|null $button_label Button label.
+	 * @param string|null $redirect_url Redirect URL.
+	 *
+	 * @return void
+	 */
+	public function render_plugin_button( string $slug, string $action, ?string $button_label = null, ?string $redirect_url = null  ): void {
+		if ( ! isset( $this->plugins[ $slug ] ) ) {
+			return;
+		}
+
+		$this->plugins[ $slug ]->get_button()->render( $action, $button_label, $redirect_url );
 	}
 }

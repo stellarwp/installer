@@ -182,7 +182,13 @@ class Button {
 	 *
 	 * @return void
 	 */
-	public function render( string $action, string $button_label = null, string $redirect_url = null ) {
+	public function render( string $action, string $button_label = null, string $redirect_url = null ): void {
+		if ( did_action( 'admin_enqueue_scripts' ) ) {
+			Assets::enqueue_scripts();
+		} elseif ( ! Assets::has_enqueued() ) {
+			add_action( 'admin_enqueue_scripts', [ Assets::class, 'enqueue_scripts' ] );
+		}
+
 		if ( empty( $button_label ) ) {
 			if ( $action === 'activate' ) {
 				$button_label = sprintf( __( 'Activate %s', '%TEXTDOMAIN%' ), $this->handler->get_name() );
