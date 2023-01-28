@@ -1,5 +1,7 @@
 # StellarWP Installer
 
+[![CI](https://github.com/stellarwp/installer/workflows/CI/badge.svg)](https://github.com/stellarwp/installer/actions?query=branch%3Amain) [![Static Analysis](https://github.com/stellarwp/installer/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/stellarwp/installer/actions/workflows/static-analysis.yml)
+
 A library for installing / activating other plugins.
 
 * [Installation](#installation)
