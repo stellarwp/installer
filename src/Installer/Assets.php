@@ -38,7 +38,7 @@ class Assets {
 		$busy_class = apply_filters( "stellarwp/installer/{$hook_prefix}/busy_class", 'is-busy' );
 
 		ob_start();
-		include basename( __DIR__ ) . '/assets/js/installer.php';
+		include dirname( __DIR__ ) . '/assets/js/installer.php';
 		$script = ob_get_clean();
 
 		wp_add_inline_script( 'jquery', $script );

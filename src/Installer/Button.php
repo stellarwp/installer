@@ -217,6 +217,6 @@ class Button {
 		$installed_label  = $this->get_installed_label();
 		$installing_label = $this->get_installing_label();
 
-		include basename( __DIR__ ) . '/admin-views/button.php';
+		include dirname( __DIR__ ) . '/admin-views/button.php';
 	}
 }
