@@ -112,7 +112,7 @@ class Installer {
 		$selectors = [];
 
 		foreach ( $plugins as $plugin_slug => $plugin ) {
-			$selectors[ $plugin_slug ] = $plugin->get_button()->get_selector();
+			$selectors[ $plugin_slug ] = '.' . $plugin->get_button()->get_selector();
 		}
 
 		return $selectors;

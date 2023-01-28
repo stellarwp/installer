@@ -41,7 +41,11 @@ class Assets {
 		include dirname( __DIR__ ) . '/assets/js/installer.php';
 		$script = ob_get_clean();
 
-		wp_add_inline_script( 'jquery', $script );
+		if ( did_action( 'admin_enqueue_scripts' ) ) {
+			echo '<script type="text/javascript">' . $script . '</script>';
+		} else {
+			wp_add_inline_script( 'jquery', $script );
+		}
 
 		self::$has_enqueued = true;
 	}

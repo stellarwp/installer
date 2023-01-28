@@ -19,7 +19,7 @@ $js_object = preg_replace( '/[^a-zA-Z0-9_]/', '', $js_object );
  *
  * @type {PlainObject}
  */
-<?php echo $js_object; ?> = <?php echo $js_object; ?> || {
+const <?php echo $js_object; ?> = {
 	ajaxurl: '<?php echo admin_url( 'admin-ajax.php', ( is_ssl() ? 'https' : 'http' ) ); ?>',
 	/**
 	* Selectors used for configuration and setup
