@@ -2,6 +2,7 @@
 
 namespace StellarWP\Installer\Handler;
 
+use stdClass;
 use StellarWP\Installer\Button;
 use StellarWP\Installer\Config;
 use StellarWP\Installer\Contracts\Handler;
