@@ -12,6 +12,12 @@ class Assets {
 	 */
 	public static $has_enqueued = false;
 
+	public static function get_url( $file ): string {
+		$path = dirname( __DIR__ );
+		$base_url = str_replace( WP_CONTENT_DIR, WP_CONTENT_URL, $path );
+		return $base_url . '/' . $file;
+	}
+
 	/**
 	 * Enqueues the installer script.
 	 *
@@ -20,12 +26,12 @@ class Assets {
 	 * @return void
 	 */
 	public static function enqueue_scripts(): void {
-		if ( self::has_enqueued() ) {
+		if ( static::has_enqueued() ) {
 			return;
 		}
 
 		$hook_prefix = Config::get_hook_prefix();
-		$js_object   = Installer::get()->get_js_object();
+		$object_key  = Installer::get()->get_js_object_key();
 		$selectors   = Installer::get()->get_js_selectors();
 
 		/**
@@ -36,18 +42,23 @@ class Assets {
 		 * @param string $busy_class The CSS class.
 		 */
 		$busy_class = apply_filters( "stellarwp/installer/{$hook_prefix}/busy_class", 'is-busy' );
+		$path       = dirname( __DIR__ );
 
 		ob_start();
-		include dirname( __DIR__ ) . '/assets/js/installer.php';
+		include $path . '/assets/js/installer.php';
 		$script = ob_get_clean();
 
-		if ( did_action( 'admin_enqueue_scripts' ) ) {
-			echo '<script type="text/javascript">' . $script . '</script>';
-		} else {
-			wp_add_inline_script( 'jquery', $script );
+		if ( ! wp_script_is( 'stellarwp_installer', 'registered' ) ) {
+			wp_register_script( 'stellarwp_installer', static::get_url( 'assets/js/installer.js' ), [ 'jQuery', 'wp-hooks' ], Installer::VERSION, true );
 		}
 
-		self::$has_enqueued = true;
+		wp_add_inline_script( 'stellarwp_installer', $script, 'after' );
+
+		if ( ! wp_script_is( 'stellarwp_installer', 'enqueued' ) ) {
+			wp_enqueue_script( 'stellarwp_installer' );
+		}
+
+		static::$has_enqueued = true;
 	}
 
 	/**
@@ -58,6 +69,6 @@ class Assets {
 	 * @return bool
 	 */
 	public static function has_enqueued(): bool {
-		return self::$has_enqueued;
+		return static::$has_enqueued;
 	}
 }

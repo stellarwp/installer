@@ -3,6 +3,9 @@
 namespace StellarWP\Installer;
 
 class Installer {
+	public const VERSION = '1.1.0';
+
+
 	/**
 	 * @var ?string
 	 */
@@ -105,10 +108,8 @@ class Installer {
 	 *
 	 * @return string
 	 */
-	public function get_js_object(): string {
-		$hook_prefix = Config::get_hook_prefix();
-
-		return "stellarwpInstaller{$hook_prefix}";
+	public function get_js_object_key(): string {
+		return sanatize_key( Config::get_hook_prefix() );
 	}
 
 	/**
