@@ -11,6 +11,13 @@ interface Handler {
 	public function activate();
 
 	/**
+	 * Clears the local properties that cache install and activation states.
+	 *
+	 * @since 1.0.0
+	 */
+	public function clear_install_and_activation_cache($plugin);
+
+	/**
 	 * Gets the js action of the resource.
 	 *
 	 * @since 1.0.0

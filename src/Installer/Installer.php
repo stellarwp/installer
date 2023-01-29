@@ -82,6 +82,7 @@ class Installer {
 		$hook_prefix = Config::get_hook_prefix();
 
 		remove_action( "wp_ajax_stellarwp_installer_{$hook_prefix}_install_plugin_{$plugin_slug}", [ $this->plugins[ $plugin_slug ], 'handle_request' ] );
+		remove_action( 'deactivated_plugin', [ $this->plugins[ $plugin_slug ], 'clear_install_and_activation_cache' ] );
 
 		unset( $this->plugins[ $plugin_slug ] );
 
@@ -296,6 +297,7 @@ class Installer {
 		$this->plugins[ $plugin_slug ] = $handler;
 
 		add_action( "wp_ajax_{$js_action}", [ $handler, 'handle_request' ] );
+		add_action( 'deactivated_plugin', [ $handler, 'clear_install_and_activation_cache' ] );
 
 		/**
 		 * Fires when a plugin is registered.
