@@ -32,13 +32,13 @@ const <?php echo $js_object; ?> = {
 };
 
 /**
- * Initializes in a Strict env the code that manages the Events admin notice.
+ * Initializes in a Strict env the code that manages the ajax plugin install functionality.
  *
  * @since 1.0.0
  *
  * @param  {PlainObject} $   jQuery
  * @param  {PlainObject} _   Underscore.js
- * @param  {PlainObject} obj tribe.events.admin.noticeInstall
+ * @param  {PlainObject} obj <?php echo esc_js( $js_object ); ?>
  *
  * @return {void}
  */
@@ -77,7 +77,7 @@ const <?php echo $js_object; ?> = {
 		const data = obj.getData( $button );
 		const requestType = $button.data( 'request-action' );
 
-		$button.addClass( 'is-busy' );
+		$button.addClass( '<?php echo esc_js( $busy_class ); ?>' );
 		$button.prop( 'disabled', true );
 
 		if ( 'install' === requestType ) {
@@ -87,7 +87,7 @@ const <?php echo $js_object; ?> = {
 		}
 
 		$.post( ajaxUrl, data, function( response ) {
-			$button.removeClass( 'is-busy' );
+			$button.removeClass( '<?php echo esc_js( $busy_class ); ?>' );
 			$button.prop( 'disabled', false );
 
 			if ( 'undefined' === typeof response.data || 'object' !== typeof response.data ) {
