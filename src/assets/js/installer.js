@@ -116,4 +116,4 @@
 	$document.ready( obj.ready );
 
 	window.stellarwp[ namespace ].installer = obj;
-} )( window.jQuery, window.wp.hooks, JSON.parse( document.currentScript.getAttribute( 'data-stellarwp-data' ) ), document.currentScript.getAttribute( 'data-stellarwp-namespace' ) );
+} )( window.jQuery, window.wp.hooks, JSON.parse( document.scripts[document.scripts.length - 1].getAttribute( 'data-stellarwp-data' ) ), document.scripts[document.scripts.length - 1].getAttribute( 'data-stellarwp-namespace' ) );
