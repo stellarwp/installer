@@ -31,7 +31,7 @@
 
 	// If the library has already been initialized, bail.
 	if ( typeof window.stellarwp[ namespace ].installer === 'object' ) {
-		return;
+		obj = window.stellarwp[ namespace ].installer;
 	}
 	/**
 	 * END: stellarwp library initialization.
