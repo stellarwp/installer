@@ -61,7 +61,9 @@ class Assets {
 			$namespace_key = Installer::get()->get_js_object_key();
 			$data_encoded = wp_json_encode( $data );
 
-			$replacement = "<script data-stellarwp-namespace='{$namespace_key}' data-stellarwp-data='{$data_encoded}'></script><script ";
+			$replacement = "
+			<script data-stellarwp-namespace='{$namespace_key}' data-stellarwp-data='{$data_encoded}'></script>
+			<script data-stellarwp-namespace='{$namespace_key}' data-stellarwp-data='{$data_encoded}' ";
 			return str_replace( '<script ', $replacement, $tag );
 		}, 50, 2 );
 
