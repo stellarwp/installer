@@ -1,22 +1,4 @@
 /**
- * Makes sure we have all the required levels on the StellarWP Object.
- *
- * @since 1.1.0
- *
- * @type {Object}
- */
-window.stellarwp = window.stellarwp || {};
-
-/**
- * Makes sure we have all the required levels on the StellarWP Object.
- *
- * @since 1.1.0
- *
- * @type {Object}
- */
-window.stellarwp.installer = window.stellarwp.installer || { items: [] };
-
-/**
  * Initializes in a Strict env the code that manages the Stellar Installer buttons.
  *
  * @since 1.0.0
@@ -58,7 +40,7 @@ window.stellarwp.installer = window.stellarwp.installer || { items: [] };
 	 */
 	obj.handleInstall = ( event ) => {
 		const $button = $( event.target );
-		const ajaxUrl = event.data.item.ajaxurl;
+		const ajaxUrl = obj.ajaxurl;
 		const data = obj.getData( $button );
 		const requestType = $button.data( 'request-action' );
 
@@ -110,23 +92,19 @@ window.stellarwp.installer = window.stellarwp.installer || { items: [] };
 	 * @return {void}
 	 */
 	obj.ready = ( event ) => {
-		obj.items = hooks.applyFilters( 'stellarwp_installer_items', obj.items, event );
-		obj.items.map( item => {
-			for ( const key in item.selectors ) {
-				$document.on(
-					'click',
-					item.selectors[ key ],
-					{
-						slug: key,
-						selector: item.selectors[ key ],
-						item: item,
-					},
-					obj.handleInstall
-				);
-			}
-		} );
+		for ( const key in obj.selectors ) {
+			$document.on(
+				'click',
+				obj.selectors[ key ],
+				{
+					slug: key,
+					selector: obj.selectors[ key ]
+				},
+				obj.handleInstall
+			);
+		}
 	};
 
 	// Configure on document ready.
 	$document.ready( obj.ready );
-} )( window.jQuery, window.wp.hooks, window.stellarwp.installer );
+} )( window.jQuery, window.wp.hooks, window.stellarwp[ document.currentScript.stellarwpNamespace ] );
