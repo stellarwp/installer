@@ -130,6 +130,24 @@ class Installer {
 	}
 
 	/**
+	 * Gets the busy class.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @return string
+	 */
+	public function get_busy_class() {
+		/**
+		 * Filters the busy class.
+		 *
+		 * @since 1.1.0
+		 *
+		 * @param string $busy_class The busy class.
+		 */
+		return apply_filters( "stellarwp/installer/{$hook_prefix}/busy_class", 'is-busy' );
+	}
+
+	/**
 	 * Gives the JS object name used for handling JS behaviors.
 	 *
 	 * @since 1.0.0

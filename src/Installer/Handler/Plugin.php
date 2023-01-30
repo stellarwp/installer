@@ -224,7 +224,7 @@ class Plugin implements Handler {
 
 		$install_url = wp_nonce_url(
 			self_admin_url(
-			'update.php?action=install-plugin&plugin=' . $this->slug
+				'update.php?action=install-plugin&plugin=' . $this->slug
 			),
 			'install-plugin_' . $this->slug
 		);
@@ -334,7 +334,7 @@ class Plugin implements Handler {
 		$hook_prefix = Config::get_hook_prefix();
 
 		$api_results = plugins_api(
-		'plugin_information',
+			'plugin_information',
 			[
 				'slug'   => $this->slug,
 				'fields' => [
@@ -383,11 +383,20 @@ class Plugin implements Handler {
 		}
 
 		if ( ! current_user_can( $this->get_permission() ) ) {
-			wp_send_json_error( [ 'message' => wpautop( sprintf( __( 'Security Error, Need higher permissions to install %1$s.' , '%TEXTDOMAIN%' ), $this->name ) ) ] );
+			wp_send_json_error(
+				[
+					'message' => wpautop(
+						sprintf(
+							__( 'Security Error, Need higher permissions to install %1$s.' , '%TEXTDOMAIN%' ),
+							$this->name
+						)
+					)
+				]
+			);
 		}
 
 		$vars = [
-		'request' => $this->get_request_var( 'request' ),
+			'request' => $this->get_request_var( 'request' ),
 		];
 
 		$success = false;
@@ -450,7 +459,7 @@ class Plugin implements Handler {
 	}
 
 	/**
-	 * Checks if `Event Tickets` is installed.
+	 * Checks if the plugin is installed.
 	 *
 	 * @since 1.0.0
 	 *

@@ -64,7 +64,7 @@
 		const data = obj.getData( $button );
 		const requestType = $button.data( 'request-action' );
 
-		$button.addClass( 'is-busy' );
+		$button.addClass( obj.busyClass );
 		$button.prop( 'disabled', true );
 
 		if ( 'install' === requestType ) {
@@ -74,7 +74,7 @@
 		}
 
 		$.post( ajaxUrl, data, ( response ) => {
-			$button.removeClass( 'is-busy' );
+			$button.removeClass( obj.busyClass );
 			$button.prop( 'disabled', false );
 
 			if ( 'undefined' === typeof response.data || 'object' !== typeof response.data ) {
