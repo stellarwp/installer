@@ -15,7 +15,7 @@ class Installer {
 	 *
 	 * @since 1.1.0
 	 *
-	 * @var Assets
+	 * @var Assets|null
 	 */
 	protected $assets;
 
@@ -67,7 +67,7 @@ class Installer {
 	 * @return Assets
 	 */
 	public function assets(): Assets {
-		if ( ! $this->assets ) {
+		if ( empty( $this->assets ) ) {
 			$this->assets = new Assets();
 		}
 

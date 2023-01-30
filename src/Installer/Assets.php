@@ -25,6 +25,7 @@ class Assets {
 	 */
 	public function get_url( string $file ): string {
 		$path     = dirname( __DIR__ );
+		// @phpstan-ignore-next-line
 		$base_url = str_replace( WP_CONTENT_DIR, WP_CONTENT_URL, $path );
 
 		if ( is_ssl() ) {
