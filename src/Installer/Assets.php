@@ -63,7 +63,7 @@ class Assets {
 
 			$replacement = "
 			<script data-stellarwp-namespace='{$namespace_key}' data-stellarwp-data='{$data_encoded}'></script>
-			<script data-stellarwp-namespace='{$namespace_key}' data-stellarwp-data='{$data_encoded}' ";
+			<script ";
 			return str_replace( '<script ', $replacement, $tag );
 		}, 50, 2 );
 
