@@ -96,7 +96,7 @@ class Assets {
 		wp_enqueue_script( $script_handle );
 	}
 
-	public static function print_stellar_namespaced_object(): void {
+	public function print_stellar_namespaced_object(): void {
 		if ( $this->has_namespaced_object() ) {
 			return;
 		}
@@ -112,7 +112,7 @@ class Assets {
 		$this->has_namespaced_object = true;
 	}
 
-	public static function get_stellar_namespace_js(): string {
+	public function get_stellar_namespace_js(): string {
 		$path = dirname( __DIR__ );
 
 		ob_start();
