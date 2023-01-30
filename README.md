@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/stellarwp/installer/workflows/Tests/badge.svg)](https://github.com/stellarwp/installer/actions?query=branch%3Amain) [![Static Analysis](https://github.com/stellarwp/installer/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/stellarwp/installer/actions/workflows/static-analysis.yml)
 
-A library for installing / activating other plugins.
+A library for installing / activating other plugins. Authored by the development team at StellarWP and provided free for the WordPress community.
 
 * [Installation](#installation)
   * [Handling text domains](#handling-text-domains)
@@ -311,3 +311,7 @@ wp.hooks.addAction( 'stellarwp_installer_HOOK_PREFIX_error', function( selector,
 	alert( message );
 } );
 ```
+
+## Acknowledgements
+
+Props to the folks at [The Events Calendar](https://theeventscalendar.com) for the efforts on the initial release of this library.
