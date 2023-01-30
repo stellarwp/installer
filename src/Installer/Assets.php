@@ -62,8 +62,7 @@ class Assets {
 			$data_encoded = wp_json_encode( $data );
 
 			$replacement = "
-			<script data-stellarwp-namespace='{$namespace_key}' data-stellarwp-data='{$data_encoded}'></script>
-			<script ";
+			<script data-stellarwp-namespace='{$namespace_key}' data-stellarwp-data='{$data_encoded}' ";
 			return str_replace( '<script ', $replacement, $tag );
 		}, 50, 2 );
 

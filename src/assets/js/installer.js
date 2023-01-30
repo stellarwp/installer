@@ -18,18 +18,20 @@
 	 * they are isolated from other instances of this library in the wild.
 	 */
 	// BEGIN: stellarwp library initialization.
-	let obj                       = JSON.parse( document.scripts[document.scripts.length - 1].getAttribute( 'data-stellarwp-data' ) );
-	const namespace               = document.scripts[document.scripts.length - 1].getAttribute( 'data-stellarwp-namespace' );
+	const currentScript           = typeof document.currentScript !== 'undefined' ? document.currentScript : document.scripts[document.scripts.length - 1];
+	const namespace               = currentScript.getAttribute( 'data-stellarwp-namespace' );
 	window.stellarwp              = window.stellarwp || {};
 	window.stellarwp[ namespace ] = window.stellarwp[ namespace ] || {};
 	// END: stellarwp library initialization.
 
 	// If the library has already been initialized, bail.
 	if ( typeof window.stellarwp[ namespace ].installer === 'object' ) {
-		obj = window.stellarwp[ namespace ].installer;
+		return;
 	}
 
-	const $document = $( document );
+	window.stellarwp[ namespace ].installer = JSON.parse( currentScript.getAttribute( 'data-stellarwp-data' ) );
+	const obj                               = window.stellarwp[ namespace ].installer;
+	const $document                         = $( document );
 
 	/**
 	 * Gets the AJAX request data.
@@ -125,6 +127,4 @@
 
 	// Configure on document ready.
 	$document.ready( obj.ready );
-
-	window.stellarwp[ namespace ].installer = obj;
 } )( window.jQuery, window.wp.hooks, document );
