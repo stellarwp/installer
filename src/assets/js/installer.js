@@ -12,6 +12,8 @@
 
 ( function( $, hooks, obj, namespace ) {
 	'use strict';
+	window.stellarwp = window.stellarwp || {};
+	window.stellarwp[ namespace ] = window.stellarwp[ namespace ] || {};
 	if ( typeof window.stellarwp[ namespace ].installer === 'object' ) {
 		obj = window.stellarwp[ namespace ].installer;
 	}
