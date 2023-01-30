@@ -6,8 +6,8 @@ A library for installing / activating other plugins. Authored by the development
 
 * [Installation](#installation)
   * [Handling text domains](#handling-text-domains)
-	* [If you are using Strauss from within your `vendor/bin` directory](#if-you-are-using-strauss-from-within-your-vendorbin-directory)
-	* [If you are using Strauss as a `.phar` file](#if-you-are-using-strauss-as-a-phar-file)
+    * [If you are using Strauss from within your `vendor/bin` directory](#if-you-are-using-strauss-from-within-your-vendorbin-directory)
+    * [If you are using Strauss as a `.phar` file](#if-you-are-using-strauss-as-a-phar-file-recommended)
 * [Initialization](#initialization)
 * [Registering a plugin](#registering-a-plugin)
   * [Simple registration](#simple-registration)
@@ -37,18 +37,7 @@ composer require stellarwp/installer
 
 This library has strings that are run through WordPress translation functions. Because of this, there's an extra step that needs to be taken to ensure that the placeholder `%TEXTDOMAIN%` is replaced with your project's text domain.
 
-#### If you are using Strauss from within your `vendor/bin` directory
-
-```json
-"scripts": {
-    "strauss": [
-      "vendor/stellarwp/installer/bin/set-domain domain=YOUR_PROJECTS_TEXT_DOMAIN",
-      "vendor/bin/strauss"
-    ]
-}
-```
-
-#### If you are using Strauss as a `.phar` file
+#### If you are using Strauss as a `.phar` file (recommended)
 
 ```json
 "scripts": {
@@ -57,6 +46,17 @@ This library has strings that are run through WordPress translation functions. B
 		"vendor/stellarwp/installer/bin/set-domain domain=YOUR_PROJECTS_TEXT_DOMAIN",
 		"@php bin/strauss.phar"
 	]
+}
+```
+
+#### If you are using Strauss from within your `vendor/bin` directory
+
+```json
+"scripts": {
+    "strauss": [
+      "vendor/stellarwp/installer/bin/set-domain domain=YOUR_PROJECTS_TEXT_DOMAIN",
+      "vendor/bin/strauss"
+    ]
 }
 ```
 
