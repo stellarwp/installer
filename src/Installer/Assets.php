@@ -26,6 +26,11 @@ class Assets {
 	public function get_url( $file ): string {
 		$path     = dirname( __DIR__ );
 		$base_url = str_replace( WP_CONTENT_DIR, WP_CONTENT_URL, $path );
+
+		if ( is_ssl() ) {
+			$base_url = str_replace( 'http://', 'https://', $base_url );
+		}
+
 		return $base_url . '/' . $file;
 	}
 
