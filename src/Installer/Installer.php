@@ -137,6 +137,8 @@ class Installer {
 	 * @return string
 	 */
 	public function get_busy_class() {
+		$hook_prefix = Config::get_hook_prefix();
+
 		/**
 		 * Filters the busy class.
 		 *
