@@ -13,8 +13,13 @@
 ( function( $, hooks, document ) {
 	'use strict';
 	// scripts[document.scripts.length - 1]
+
+	let obj = JSON.parse( document.scripts[document.scripts.length - 1].getAttribute( 'data-stellarwp-data' ) );
+	const namespace = document.scripts[document.scripts.length - 1].getAttribute( 'data-stellarwp-namespace' );
+	/*
 	let obj = JSON.parse( document.currentScript.getAttribute( 'data-stellarwp-data' ) );
 	const namespace = document.currentScript.getAttribute( 'data-stellarwp-namespace' );
+	*/
 	window.stellarwp = window.stellarwp || {};
 	window.stellarwp[ namespace ] = window.stellarwp[ namespace ] || {};
 	if ( typeof window.stellarwp[ namespace ].installer === 'object' ) {
