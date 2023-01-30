@@ -20,6 +20,10 @@
 	// BEGIN: stellarwp library initialization.
 	const currentScript           = typeof document.currentScript !== 'undefined' ? document.currentScript : document.scripts[document.scripts.length - 1];
 	const namespace               = currentScript.getAttribute( 'data-stellarwp-namespace' );
+	if ( namespace === null ) {
+		console.info( 'The stellarwp/installer library failed to initialize because the data-stellarwp-namespace attribute could not be read from the script tag.' );
+		return;
+	}
 	window.stellarwp              = window.stellarwp || {};
 	window.stellarwp[ namespace ] = window.stellarwp[ namespace ] || {};
 	// END: stellarwp library initialization.
