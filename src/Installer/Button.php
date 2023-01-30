@@ -69,7 +69,7 @@ class Button {
 	protected function get_activating_label() {
 		$hook_prefix = Config::get_hook_prefix();
 
-		$text = __( 'Installing...', '%TEXTDOMAIN%' );
+		$text = __( 'Activating...', '%TEXTDOMAIN%' );
 
 		/**
 		 * Filters the activating label.
@@ -100,7 +100,7 @@ class Button {
 		 * @param string $slug The slug of the resource.
 		 * @param Handler $handler The handler.
 		 */
-		$classes = apply_filters( "stellarwp/installer/{$hook_prefix}/button_classes", $classes, $this->handler->get_slug(), $this->handler );;
+		$classes = apply_filters( "stellarwp/installer/{$hook_prefix}/button_classes", $classes, $this->handler->get_slug(), $this->handler );
 
 		if ( ! is_array( $classes ) ) {
 			$classes = (array) $classes;

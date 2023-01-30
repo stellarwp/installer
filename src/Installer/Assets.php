@@ -85,6 +85,7 @@ class Assets {
 		$this->enqueue_script( 'stellarwp-installer', [
 			'ajaxurl'   => admin_url( 'admin-ajax.php', ( is_ssl() ? 'https' : 'http' ) ),
 			'selectors' => Installer::get()->get_js_selectors(),
+			'busyClass' => Installer::get()->get_busy_class(),
 		] );
 
 		$this->has_enqueued = true;

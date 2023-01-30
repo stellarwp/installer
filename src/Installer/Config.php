@@ -15,7 +15,12 @@ class Config {
 	 */
 	public static function get_hook_prefix(): string {
 		if ( ! static::$hook_prefix ) {
-			throw new \RuntimeException( sprintf( __( 'You must provide a hook prefix via %1$s before creating an Installer.', '%TEXTDOMAIN%' ), __CLASS__ . '::set_hook_prefix()' ) );
+			throw new \RuntimeException(
+				sprintf(
+					__( 'You must provide a hook prefix via %1$s before creating an Installer.', '%TEXTDOMAIN%' ),
+					__CLASS__ . '::set_hook_prefix()'
+				)
+			);
 		}
 
 		return static::$hook_prefix;
@@ -39,7 +44,13 @@ class Config {
 	 */
 	public static function set_hook_prefix( string $hook_prefix ): void {
 		if ( ! empty( static::$hook_prefix ) ) {
-			throw new \RuntimeException( sprintf( __( 'The %1$s has already been called and set to %2$s.', '%TEXTDOMAIN%' ), __CLASS__ . '::set_hook_prefix()', static::$hook_prefix ) );
+			throw new \RuntimeException(
+				sprintf(
+					__( 'The %1$s has already been called and set to %2$s.', '%TEXTDOMAIN%' ),
+					__CLASS__ . '::set_hook_prefix()',
+					static::$hook_prefix
+				)
+			);
 		}
 
 		$sanitized_prefix = sanitize_key( $hook_prefix );
