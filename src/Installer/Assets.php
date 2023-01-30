@@ -2,6 +2,8 @@
 
 namespace StellarWP\Installer;
 
+use StellarWP\Installer\Installer;
+
 class Assets {
 	/**
 	 * Has the installer script been enqueued?
@@ -10,7 +12,7 @@ class Assets {
 	 *
 	 * @var bool
 	 */
-	protected static $has_enqueued = false;
+	protected $has_enqueued = false;
 
 	/**
 	 * Has a JS named StellarWP object key created.
@@ -19,9 +21,9 @@ class Assets {
 	 *
 	 * @var bool
 	 */
-	public static $has_namespaced_object = false;
+	public $has_namespaced_object = false;
 
-	public static function get_url( $file ): string {
+	public function get_url( $file ): string {
 		$path     = dirname( __DIR__ );
 		$base_url = str_replace( WP_CONTENT_DIR, WP_CONTENT_URL, $path );
 		return $base_url . '/' . $file;
@@ -34,22 +36,22 @@ class Assets {
 	 *
 	 * @return void
 	 */
-	public static function enqueue_scripts(): void {
-		if ( static::has_enqueued() ) {
+	public function enqueue_scripts(): void {
+		if ( $this->has_enqueued() ) {
 			return;
 		}
 
-		static::register_script( 'stellarwp-installer', 'assets/js/installer.js', [ 'jQuery', 'wp-hooks' ], true );
+		$this->register_script( 'stellarwp-installer', 'assets/js/installer.js', [ 'jquery', 'wp-hooks' ], true );
 
-		static::enqueue_script( 'stellarwp-installer', [
+		$this->enqueue_script( 'stellarwp-installer', [
 			'ajaxurl'   => admin_url( 'admin-ajax.php', ( is_ssl() ? 'https' : 'http' ) ),
 			'selectors' => Installer::get()->get_js_selectors(),
 		] );
 
-		static::$has_enqueued = true;
+		$this->has_enqueued = true;
 	}
 
-	public static function get_script_handle( string $slug ): string {
+	public function get_script_handle( string $slug ): string {
 		return implode( '-', [ $slug, Config::get_hook_prefix() ] );
 	}
 
@@ -62,9 +64,9 @@ class Assets {
 	 *                                    Default 'false'.
 	 * @return bool Whether the script has been registered. True on success, false on failure.
 	 */
-	public static function register_script( $handle, $src, $deps, $in_footer ): bool {
-		$script_handle = static::get_script_handle( $handle );
-		$registered = wp_register_script( $script_handle, static::get_url( $src ), $deps, Installer::VERSION, $in_footer );
+	public function register_script( $handle, $src, $deps, $in_footer ): bool {
+		$script_handle = $this->get_script_handle( $handle );
+		$registered = wp_register_script( $script_handle, $this->get_url( $src ), $deps, Installer::VERSION, $in_footer );
 
 		// On fail bail early.
 		if ( ! $registered ) {
@@ -72,13 +74,13 @@ class Assets {
 		}
 
 		// Ensure we have a stellar object ready.
-		static::print_stellar_namespaced_object();
+		$this->print_stellar_namespaced_object();
 
 		return $registered;
 	}
 
-	public static function enqueue_script( $handle, $data = [] ): void {
-		$script_handle = static::get_script_handle( $handle );
+	public function enqueue_script( $handle, $data = [] ): void {
+		$script_handle = $this->get_script_handle( $handle );
 		add_filter( 'script_loader_tag', static function( $tag, $handle ) use ( $script_handle, $data ) {
 			if ( $handle !== $script_handle ) {
 				return $tag;
@@ -95,19 +97,19 @@ class Assets {
 	}
 
 	public static function print_stellar_namespaced_object(): void {
-		if ( static::has_namespaced_object() ) {
+		if ( $this->has_namespaced_object() ) {
 			return;
 		}
 
 		if ( ! did_action( 'admin_enqueue_scripts' ) && ! doing_action( 'admin_enqueue_scripts' ) ) {
-			add_action( 'admin_enqueue_scripts', [ static::class, 'print_stellar_namespaced_object' ] );
+			add_action( 'admin_enqueue_scripts', [ $this, 'print_stellar_namespaced_object' ] );
 			return;
 		}
 
-		wp_print_inline_script_tag( static::get_stellar_namespace_js(), [ 'data-stellarwp-namespace' => Installer::get()->get_js_object_key() ] );
+		wp_print_inline_script_tag( $this->get_stellar_namespace_js(), [ 'data-stellarwp-namespace' => Installer::get()->get_js_object_key() ] );
 
 		// Prevents multiple.
-		static::$has_namespaced_object = true;
+		$this->has_namespaced_object = true;
 	}
 
 	public static function get_stellar_namespace_js(): string {
@@ -127,8 +129,8 @@ class Assets {
 	 *
 	 * @return bool
 	 */
-	public static function has_enqueued(): bool {
-		return static::$has_enqueued;
+	public function has_enqueued(): bool {
+		return $this->has_enqueued;
 	}
 
 	/**
@@ -138,7 +140,7 @@ class Assets {
 	 *
 	 * @return bool
 	 */
-	public static function has_namespaced_object(): bool {
-		return static::$has_namespaced_object;
+	public function has_namespaced_object(): bool {
+		return $this->has_namespaced_object;
 	}
 }

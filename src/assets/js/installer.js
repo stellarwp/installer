@@ -10,7 +10,6 @@
  * @return {void}
  */
 
-console.log( document.currentScript.attributes );
 ( function( $, hooks, obj, namespace ) {
 	'use strict';
 	if ( typeof window.stellarwp[ namespace ].installer === 'object' ) {

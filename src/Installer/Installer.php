@@ -3,8 +3,21 @@
 namespace StellarWP\Installer;
 
 class Installer {
+	/**
+	 * The version number for the library.
+	 *
+	 * @since 1.1.0
+	 */
 	public const VERSION = '1.1.0';
 
+	/**
+	 * Asset object.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @var Assets
+	 */
+	protected $assets;
 
 	/**
 	 * @var ?string
@@ -44,6 +57,21 @@ class Installer {
 		static::$instance = new self();
 
 		return static::$instance;
+	}
+
+	/**
+	 * Gets the asset object.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @return Assets
+	 */
+	public function assets(): Assets {
+		if ( ! $this->assets ) {
+			$this->assets = new Assets();
+		}
+
+		return $this->assets;
 	}
 
 	/**
