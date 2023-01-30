@@ -1,50 +1,41 @@
-<?php
 /**
- * JS: Dynamically generated JS with custom object for a particular instance of the installer.
- *
- * @var string $js_object The JS object name.
- * @var string $busy_class The CSS class to use when the button is busy.
- * @var array $selectors The collection of registered resource selectors. The key of each selector is the resource slug and the value is the selector.
- */
-// We include the following use line to ensure that Strauss copies this file.
-use StellarWP\Installer\Installer;
-
-// @phpstan-ignore-next-line
-$js_object = preg_replace( '/[^a-zA-Z0-9_]/', '', $js_object );
-?>
-/**
- * Makes sure we have all the required levels on the Tribe Object
+ * Initializes in a Strict env the code that manages the Stellar Installer buttons.
  *
  * @since 1.0.0
  *
- * @type {PlainObject}
- */
-const <?php echo $js_object; ?> = {
-	ajaxurl: '<?php echo admin_url( 'admin-ajax.php', ( is_ssl() ? 'https' : 'http' ) ); ?>',
-	/**
-	* Selectors used for configuration and setup
-	*
-	* @since 1.0.0
-	*
-	* @type {PlainObject}
-	*/
-	selectors: <?php echo wp_json_encode( $selectors ); ?>
-};
-
-/**
- * Initializes in a Strict env the code that manages the Events admin notice.
- *
- * @since 1.0.0
- *
- * @param  {PlainObject} $   jQuery
- * @param  {PlainObject} _   Underscore.js
- * @param  {PlainObject} obj tribe.events.admin.noticeInstall
+ * @param  {Object} $     jQuery
+ * @param  {Object} hooks WP Hooks
+ * @param  {Object} obj   window.stellarwp.installer
  *
  * @return {void}
  */
-( function( $, _, obj ) {
+
+( function( $, hooks, document ) {
 	'use strict';
-	const $document = $( document );
+
+	/**
+	 * Initialize the necessary varaibles for StellarWP libraries such that
+	 * they are isolated from other instances of this library in the wild.
+	 */
+	// BEGIN: stellarwp library initialization.
+	const currentScript           = typeof document.currentScript !== 'undefined' ? document.currentScript : document.scripts[document.scripts.length - 1];
+	const namespace               = currentScript.getAttribute( 'data-stellarwp-namespace' );
+	if ( namespace === null ) {
+		console.info( 'The stellarwp/installer library failed to initialize because the data-stellarwp-namespace attribute could not be read from the script tag.' );
+		return;
+	}
+	window.stellarwp              = window.stellarwp || {};
+	window.stellarwp[ namespace ] = window.stellarwp[ namespace ] || {};
+	// END: stellarwp library initialization.
+
+	// If the library has already been initialized, bail.
+	if ( typeof window.stellarwp[ namespace ].installer === 'object' ) {
+		return;
+	}
+
+	window.stellarwp[ namespace ].installer = JSON.parse( currentScript.getAttribute( 'data-stellarwp-data' ) );
+	const obj                               = window.stellarwp[ namespace ].installer;
+	const $document                         = $( document );
 
 	/**
 	 * Gets the AJAX request data.
@@ -55,7 +46,7 @@ const <?php echo $js_object; ?> = {
 	 *
 	 * @return {Object} data
 	 */
-	obj.getData = function( $button ) {
+	obj.getData = ( $button ) => {
 		const data = {
 			'action': $button.data( 'action' ),
 			'request': $button.data( 'request-action' ),
@@ -71,8 +62,8 @@ const <?php echo $js_object; ?> = {
 	 *
 	 * @since 1.0.0
 	 */
-	obj.handleInstall = function( e ) {
-		const $button = $( this );
+	obj.handleInstall = ( event ) => {
+		const $button = $( event.target );
 		const ajaxUrl = obj.ajaxurl;
 		const data = obj.getData( $button );
 		const requestType = $button.data( 'request-action' );
@@ -86,7 +77,7 @@ const <?php echo $js_object; ?> = {
 			$button.text( $button.data( 'activating-label' ) );
 		}
 
-		$.post( ajaxUrl, data, function( response ) {
+		$.post( ajaxUrl, data, ( response ) => {
 			$button.removeClass( 'is-busy' );
 			$button.prop( 'disabled', false );
 
@@ -105,9 +96,9 @@ const <?php echo $js_object; ?> = {
 					location.replace( $button.data('redirect-url') );
 				}
 			} else {
-				wp.hooks.doAction(
+				hooks.doAction(
 					'stellarwp_installer_' + $button.data( 'hook-prefix' ) + '_error',
-					e.data.selector,
+					event.data.selector,
 					$button.data( 'slug' ),
 					data.action,
 					response.data.message,
@@ -124,14 +115,14 @@ const <?php echo $js_object; ?> = {
 	 *
 	 * @return {void}
 	 */
-	obj.ready = function() {
+	obj.ready = ( event ) => {
 		for ( const key in obj.selectors ) {
 			$document.on(
 				'click',
 				obj.selectors[ key ],
 				{
 					slug: key,
-					selector: obj.selectors[key]
+					selector: obj.selectors[ key ]
 				},
 				obj.handleInstall
 			);
@@ -140,4 +131,4 @@ const <?php echo $js_object; ?> = {
 
 	// Configure on document ready.
 	$document.ready( obj.ready );
-} )( jQuery, window.underscore || window._, <?php echo $js_object; ?> );
+} )( window.jQuery, window.wp.hooks, document );

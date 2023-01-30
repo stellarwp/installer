@@ -194,10 +194,11 @@ class Button {
 	 * @return void
 	 */
 	public function render( string $request_action, string $button_label = null, string $redirect_url = null ): void {
+		$assets = Installer::get()->assets();
 		if ( did_action( 'admin_enqueue_scripts' ) ) {
-			Assets::enqueue_scripts();
-		} elseif ( ! Assets::has_enqueued() ) {
-			add_action( 'admin_enqueue_scripts', [ Assets::class, 'enqueue_scripts' ] );
+			$assets->enqueue_scripts();
+		} elseif ( ! $assets->has_enqueued() ) {
+			add_action( 'admin_enqueue_scripts', [ $assets, 'enqueue_scripts' ] );
 		}
 
 		if ( empty( $button_label ) ) {

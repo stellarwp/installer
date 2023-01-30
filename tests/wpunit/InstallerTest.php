@@ -21,7 +21,7 @@ class InstallerTest extends InstallerTestCase {
 	public function should_add_prefix_to_js_object() {
 		$installer = Installer::get();
 
-		$this->assertEquals( 'stellarwpInstallertest', $installer->get_js_object() );
+		$this->assertEquals( 'test', $installer->get_js_object_key() );
 	}
 
 	/**

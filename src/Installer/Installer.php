@@ -4,6 +4,22 @@ namespace StellarWP\Installer;
 
 class Installer {
 	/**
+	 * The version number for the library.
+	 *
+	 * @since 1.1.0
+	 */
+	public const VERSION = '1.1.0';
+
+	/**
+	 * Asset object.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @var Assets|null
+	 */
+	protected $assets;
+
+	/**
 	 * @var ?string
 	 */
 	protected static $hook_prefix;
@@ -41,6 +57,21 @@ class Installer {
 		static::$instance = new self();
 
 		return static::$instance;
+	}
+
+	/**
+	 * Gets the asset object.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @return Assets
+	 */
+	public function assets(): Assets {
+		if ( empty( $this->assets ) ) {
+			$this->assets = new Assets();
+		}
+
+		return $this->assets;
 	}
 
 	/**
@@ -105,10 +136,8 @@ class Installer {
 	 *
 	 * @return string
 	 */
-	public function get_js_object(): string {
-		$hook_prefix = Config::get_hook_prefix();
-
-		return "stellarwpInstaller{$hook_prefix}";
+	public function get_js_object_key(): string {
+		return sanitize_key( Config::get_hook_prefix() );
 	}
 
 	/**
