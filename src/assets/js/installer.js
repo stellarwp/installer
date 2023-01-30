@@ -16,26 +16,18 @@
 	/**
 	 * Initialize the necessary varaibles for StellarWP libraries such that
 	 * they are isolated from other instances of this library in the wild.
-	 *
-	 * BEGIN: stellarwp library initialization.
 	 */
-	// Get the relevant library data from the script tag immediately preceding this one.
-	let obj = JSON.parse( document.scripts[document.scripts.length - 1].getAttribute( 'data-stellarwp-data' ) );
-
-	// Get the namespace for this instance of the library from the script tag immediately preceding this one.
-	const namespace = document.scripts[document.scripts.length - 1].getAttribute( 'data-stellarwp-namespace' );
-
-	// Ensure that the stellarwp object exists.
+	// BEGIN: stellarwp library initialization.
+	let obj                       = JSON.parse( document.scripts[document.scripts.length - 1].getAttribute( 'data-stellarwp-data' ) );
+	const namespace               = document.scripts[document.scripts.length - 1].getAttribute( 'data-stellarwp-namespace' );
 	window.stellarwp              = window.stellarwp || {};
 	window.stellarwp[ namespace ] = window.stellarwp[ namespace ] || {};
+	// END: stellarwp library initialization.
 
 	// If the library has already been initialized, bail.
 	if ( typeof window.stellarwp[ namespace ].installer === 'object' ) {
 		obj = window.stellarwp[ namespace ].installer;
 	}
-	/**
-	 * END: stellarwp library initialization.
-	 */
 
 	const $document = $( document );
 
