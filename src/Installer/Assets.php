@@ -2,6 +2,8 @@
 
 namespace StellarWP\Installer;
 
+use StellarWP\Installer\Installer;
+
 class Assets {
 	/**
 	 * Has the installer script been enqueued?
@@ -10,21 +12,60 @@ class Assets {
 	 *
 	 * @var bool
 	 */
-	protected static $has_enqueued = false;
+	protected $has_enqueued = false;
 
 	/**
-	 * Has a JS named StellarWP object key created.
+	 * Get the URL for the JS.
 	 *
 	 * @since 1.1.0
 	 *
-	 * @var bool
+	 * @param string $file The file to get the URL for.
+	 *
+	 * @return string
 	 */
-	public static $has_namespaced_object = false;
-
-	public static function get_url( $file ): string {
+	public function get_url( string $file ): string {
 		$path     = dirname( __DIR__ );
+		// @phpstan-ignore-next-line
 		$base_url = str_replace( WP_CONTENT_DIR, WP_CONTENT_URL, $path );
+
+		if ( is_ssl() ) {
+			$base_url = str_replace( 'http://', 'https://', $base_url );
+		}
+
 		return $base_url . '/' . $file;
+	}
+
+	/**
+	 * Enqueues a script.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param string $handle The script handle.
+	 * @param array  $data   The data to pass to the script.
+	 *
+	 * @return void
+	 */
+	public function enqueue_script( string $handle, array $data = [] ): void {
+		$script_handle = $this->get_script_handle( $handle );
+
+		// If the script has already been enqueued from elsewhere, bail.
+		if ( wp_script_is( $script_handle, 'enqueued' ) ) {
+			return;
+		}
+
+		add_filter( 'script_loader_tag', static function( $tag, $handle ) use ( $script_handle, $data ) {
+			if ( $handle !== $script_handle ) {
+				return $tag;
+			}
+
+			$namespace_key = Installer::get()->get_js_object_key();
+			$data_encoded = wp_json_encode( $data );
+
+			$replacement = "<script data-stellarwp-namespace='{$namespace_key}' data-stellarwp-data='{$data_encoded}' ";
+			return str_replace( '<script ', $replacement, $tag );
+		}, 50, 2 );
+
+		wp_enqueue_script( $script_handle );
 	}
 
 	/**
@@ -34,90 +75,23 @@ class Assets {
 	 *
 	 * @return void
 	 */
-	public static function enqueue_scripts(): void {
-		if ( static::has_enqueued() ) {
+	public function enqueue_scripts(): void {
+		if ( $this->has_enqueued() ) {
 			return;
 		}
 
-		static::register_script( 'stellarwp-installer', 'assets/js/installer.js', [ 'jQuery', 'wp-hooks' ], true );
+		$this->register_script( 'stellarwp-installer', 'assets/js/installer.js', [ 'jquery', 'wp-hooks' ], true );
 
-		static::enqueue_script( 'stellarwp-installer', [
+		$this->enqueue_script( 'stellarwp-installer', [
 			'ajaxurl'   => admin_url( 'admin-ajax.php', ( is_ssl() ? 'https' : 'http' ) ),
 			'selectors' => Installer::get()->get_js_selectors(),
 		] );
 
-		static::$has_enqueued = true;
+		$this->has_enqueued = true;
 	}
 
-	public static function get_script_handle( string $slug ): string {
+	public function get_script_handle( string $slug ): string {
 		return implode( '-', [ $slug, Config::get_hook_prefix() ] );
-	}
-
-	/**
-	 * @param string           $handle    Name of the script. Should be unique.
-	 * @param string|false     $src       Full URL of the script, or path of the script relative to the WordPress root directory.
-	 *                                    If source is set to false, script is an alias of other scripts it depends on.
-	 * @param string[]         $deps      Optional. An array of registered script handles this script depends on. Default empty array.
-	 * @param bool             $in_footer Optional. Whether to enqueue the script before `</body>` instead of in the `<head>`.
-	 *                                    Default 'false'.
-	 * @return bool Whether the script has been registered. True on success, false on failure.
-	 */
-	public static function register_script( $handle, $src, $deps, $in_footer ): bool {
-		$script_handle = static::get_script_handle( $handle );
-		$registered = wp_register_script( $script_handle, static::get_url( $src ), $deps, Installer::VERSION, $in_footer );
-
-		// On fail bail early.
-		if ( ! $registered ) {
-			return $registered;
-		}
-
-		// Ensure we have a stellar object ready.
-		static::print_stellar_namespaced_object();
-
-		return $registered;
-	}
-
-	public static function enqueue_script( $handle, $data = [] ): void {
-		$script_handle = static::get_script_handle( $handle );
-		add_filter( 'script_loader_tag', static function( $tag, $handle ) use ( $script_handle, $data ) {
-			if ( $handle !== $script_handle ) {
-				return $tag;
-			}
-
-			$namespace_key = Installer::get()->get_js_object_key();
-			$data_encoded = wp_json_encode( $data );
-
-			$replacement = "<script data-stellarwp-namespace='{$namespace_key}' data-stellarwp-data='{$data_encoded}'";
-			return str_replace( '<script ', $replacement, $tag );
-		}, 50, 2 );
-
-		wp_enqueue_script( $script_handle );
-	}
-
-	public static function print_stellar_namespaced_object(): void {
-		if ( static::has_namespaced_object() ) {
-			return;
-		}
-
-		if ( ! did_action( 'admin_enqueue_scripts' ) && ! doing_action( 'admin_enqueue_scripts' ) ) {
-			add_action( 'admin_enqueue_scripts', [ static::class, 'print_stellar_namespaced_object' ] );
-			return;
-		}
-
-		wp_print_inline_script_tag( static::get_stellar_namespace_js(), [ 'data-stellarwp-namespace' => Installer::get()->get_js_object_key() ] );
-
-		// Prevents multiple.
-		static::$has_namespaced_object = true;
-	}
-
-	public static function get_stellar_namespace_js(): string {
-		$path = dirname( __DIR__ );
-
-		ob_start();
-		include $path . '/admin-views/stellarwp-namespace-script.php';
-		$script = ob_get_clean();
-
-		return $script;
 	}
 
 	/**
@@ -127,18 +101,33 @@ class Assets {
 	 *
 	 * @return bool
 	 */
-	public static function has_enqueued(): bool {
-		return static::$has_enqueued;
+	public function has_enqueued(): bool {
+		return $this->has_enqueued;
 	}
 
 	/**
-	 * Has the installer script been enqueued?
+	 * Register the JS.
 	 *
 	 * @since 1.1.0
 	 *
-	 * @return bool
+	 * @param string           $handle    Name of the script. Should be unique.
+	 * @param string|false     $src       Full URL of the script, or path of the script relative to the WordPress root directory.
+	 *                                    If source is set to false, script is an alias of other scripts it depends on.
+	 * @param string[]         $deps      Optional. An array of registered script handles this script depends on. Default empty array.
+	 * @param bool             $in_footer Optional. Whether to enqueue the script before `</body>` instead of in the `<head>`.
+	 *                                    Default 'false'.
+	 *
+	 * @return bool Whether the script has been registered. True on success, false on failure.
 	 */
-	public static function has_namespaced_object(): bool {
-		return static::$has_namespaced_object;
+	public function register_script( $handle, $src, $deps, $in_footer ): bool {
+		$script_handle = $this->get_script_handle( $handle );
+
+		if ( wp_script_is( $script_handle, 'registered' ) ) {
+			return true;
+		}
+
+		$registered = wp_register_script( $script_handle, $this->get_url( $src ), $deps, Installer::VERSION, $in_footer );
+
+		return $registered;
 	}
 }

@@ -10,14 +10,32 @@
  * @return {void}
  */
 
-console.log( document.currentScript.attributes );
-( function( $, hooks, obj, namespace ) {
+( function( $, hooks, document ) {
 	'use strict';
+
+	/**
+	 * Initialize the necessary varaibles for StellarWP libraries such that
+	 * they are isolated from other instances of this library in the wild.
+	 */
+	// BEGIN: stellarwp library initialization.
+	const currentScript           = typeof document.currentScript !== 'undefined' ? document.currentScript : document.scripts[document.scripts.length - 1];
+	const namespace               = currentScript.getAttribute( 'data-stellarwp-namespace' );
+	if ( namespace === null ) {
+		console.info( 'The stellarwp/installer library failed to initialize because the data-stellarwp-namespace attribute could not be read from the script tag.' );
+		return;
+	}
+	window.stellarwp              = window.stellarwp || {};
+	window.stellarwp[ namespace ] = window.stellarwp[ namespace ] || {};
+	// END: stellarwp library initialization.
+
+	// If the library has already been initialized, bail.
 	if ( typeof window.stellarwp[ namespace ].installer === 'object' ) {
-		obj = window.stellarwp[ namespace ].installer;
+		return;
 	}
 
-	const $document = $( document );
+	window.stellarwp[ namespace ].installer = JSON.parse( currentScript.getAttribute( 'data-stellarwp-data' ) );
+	const obj                               = window.stellarwp[ namespace ].installer;
+	const $document                         = $( document );
 
 	/**
 	 * Gets the AJAX request data.
@@ -113,6 +131,4 @@ console.log( document.currentScript.attributes );
 
 	// Configure on document ready.
 	$document.ready( obj.ready );
-
-	window.stellarwp[ namespace ].installer = obj;
-} )( window.jQuery, window.wp.hooks, JSON.parse( document.currentScript.getAttribute( 'data-stellarwp-data' ) ), document.currentScript.getAttribute( 'data-stellarwp-namespace' ) );
+} )( window.jQuery, window.wp.hooks, document );
