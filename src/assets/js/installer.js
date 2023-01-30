@@ -9,8 +9,14 @@
  *
  * @return {void}
  */
-( function( $, hooks, obj ) {
+
+console.log( document.currentScript.attributes );
+( function( $, hooks, obj, namespace ) {
 	'use strict';
+	if ( typeof window.stellarwp[ namespace ].installer === 'object' ) {
+		obj = window.stellarwp[ namespace ].installer;
+	}
+
 	const $document = $( document );
 
 	/**
@@ -107,4 +113,6 @@
 
 	// Configure on document ready.
 	$document.ready( obj.ready );
-} )( window.jQuery, window.wp.hooks, window.stellarwp[ document.currentScript.stellarwpNamespace ] );
+
+	window.stellarwp[ namespace ].installer = obj;
+} )( window.jQuery, window.wp.hooks, JSON.parse( document.currentScript.getAttribute( 'data-stellarwp-data' ) ), document.currentScript.getAttribute( 'data-stellarwp-namespace' ) );

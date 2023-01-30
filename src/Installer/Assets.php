@@ -41,28 +41,10 @@ class Assets {
 
 		static::register_script( 'stellarwp-installer', 'assets/js/installer.js', [ 'jQuery', 'wp-hooks' ], true );
 
-
-//		$hook_prefix = Config::get_hook_prefix();
-//		$object_key  = Installer::get()->get_js_object_key();
-//		$selectors   = Installer::get()->get_js_selectors();
-//
-//		/**
-//		 * Filters the CSS class for indicating a button is busy.
-//		 *
-//		 * @since 1.0.0
-//		 *
-//		 * @param string $busy_class The CSS class.
-//		 */
-//		$busy_class = apply_filters( "stellarwp/installer/{$hook_prefix}/busy_class", 'is-busy' );
-//		$path       = dirname( __DIR__ );
-//		ob_start();
-//		include $path . '/assets/js/installer.php';
-//		$script = ob_get_clean();
-//		wp_add_inline_script( 'stellarwp_installer', $script, 'after' );
-//
-//		if ( ! wp_script_is( 'stellarwp_installer', 'enqueued' ) ) {
-//			wp_enqueue_script( 'stellarwp_installer' );
-//		}
+		static::enqueue_script( 'stellarwp-installer', [
+			'ajaxurl'   => admin_url( 'admin-ajax.php', ( is_ssl() ? 'https' : 'http' ) ),
+			'selectors' => Installer::get()->get_js_selectors(),
+		] );
 
 		static::$has_enqueued = true;
 	}
@@ -91,19 +73,25 @@ class Assets {
 
 		// Ensure we have a stellar object ready.
 		static::print_stellar_namespaced_object();
-		add_filter( 'script_loader_tag', static function( $tag, $handle ) use ( $script_handle ) {
+
+		return $registered;
+	}
+
+	public static function enqueue_script( $handle, $data = [] ): void {
+		$script_handle = static::get_script_handle( $handle );
+		add_filter( 'script_loader_tag', static function( $tag, $handle ) use ( $script_handle, $data ) {
 			if ( $handle !== $script_handle ) {
 				return $tag;
 			}
 
 			$namespace_key = Installer::get()->get_js_object_key();
+			$data_encoded = wp_json_encode( $data );
 
-			$replacement = "<script stellarwpNamespace='{$namespace_key}'";
+			$replacement = "<script data-stellarwp-namespace='{$namespace_key}' data-stellarwp-data='{$data_encoded}'";
 			return str_replace( '<script ', $replacement, $tag );
-
 		}, 50, 2 );
 
-		return $registered;
+		wp_enqueue_script( $script_handle );
 	}
 
 	public static function print_stellar_namespaced_object(): void {
@@ -116,7 +104,7 @@ class Assets {
 			return;
 		}
 
-		wp_print_inline_script_tag( static::get_stellar_namespace_js() );
+		wp_print_inline_script_tag( static::get_stellar_namespace_js(), [ 'data-stellarwp-namespace' => Installer::get()->get_js_object_key() ] );
 
 		// Prevents multiple.
 		static::$has_namespaced_object = true;

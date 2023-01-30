@@ -109,7 +109,7 @@ class Installer {
 	 * @return string
 	 */
 	public function get_js_object_key(): string {
-		return sanatize_key( Config::get_hook_prefix() );
+		return sanitize_key( Config::get_hook_prefix() );
 	}
 
 	/**
