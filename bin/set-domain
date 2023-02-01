@@ -34,7 +34,7 @@ function run( string $command ): string {
 
 parse_str( implode( '&', array_slice( $argv, 1 ) ), $result );
 
-$domain = $result['domain'] ?? ask( 'Domain Name', 'stellar-uplink' );
+$domain = $result['domain'] ?? ask( 'Domain Name', 'stellar-installer' );
 
 if ( empty( $domain ) ) {
 	writeln( 'Translation domain could not be empty' );
