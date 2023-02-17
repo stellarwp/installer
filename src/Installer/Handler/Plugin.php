@@ -134,7 +134,7 @@ class Plugin implements Handler {
 			return true;
 		}
 
-		$activate = activate_plugin( $this->get_basename(), '', false, true );
+		$activate = activate_plugin( $this->get_basename() );
 
 		$this->is_active = ( $activate === null );
 
@@ -429,7 +429,7 @@ class Plugin implements Handler {
 			$installed = $upgrader->install( $url );
 
 			if ( $installed ) {
-				$activate = activate_plugin( $this->get_basename(), '', false, true );
+				$activate = activate_plugin( $this->get_basename() );
 				$success  = ! is_wp_error( $activate );
 			} else {
 				$success = false;
