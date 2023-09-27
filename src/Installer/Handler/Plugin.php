@@ -130,13 +130,31 @@ class Plugin implements Handler {
 			return $this->install();
 		}
 
-		if ( $this->is_active() ) {
-			return true;
+		if ( ! $this->is_active() ) {
+			$activate = activate_plugin( $this->get_basename(), '', false, true );
+
+			$this->is_active = ( $activate === null );
 		}
 
-		$activate = activate_plugin( $this->get_basename(), '', false, true );
+		$plugin_active = $this->is_active;
 
-		$this->is_active = ( $activate === null );
+		if ( $this->is_active ) {
+			/**
+			 * Fires when a plugin is activated successfully.
+			 *
+			 * @since TBD
+			 */
+			do_action( "stellarwp/installer/{$plugin_active}/plugin_activated" );
+		} else {
+
+			/**
+			 * Fires when a plugin is activation fails.
+			 *
+			 * @since TBD
+			 */
+			do_action( "stellarwp/installer/{$plugin_active}/failid_plugin_activation" );
+
+		}
 
 		return $this->is_active;
 	}
@@ -436,6 +454,26 @@ class Plugin implements Handler {
 			}
 		} else {
 			$success = false;
+		}
+
+		if ( $success ) {
+			$plugin_slug = $this->slug;
+
+			/**
+			 * Fires when a plugin is installed successfully.
+			 *
+			 * @since TBD
+			 */
+			do_action( "stellarwp/installer/{$plugin_slug}/plugin_installed" );
+		} else {
+			$plugin_slug = $this->slug;
+
+			/**
+			 * Fires when a plugin installed fails.
+			 *
+			 * @since TBD
+			 */
+			do_action( "stellarwp/installer/{$plugin_slug}/failed_plugin_install" );
 		}
 
 		return $success;
